@@ -1,0 +1,152 @@
+class ContentItem:
+    def __init__(self, id, name, duration):
+        self.id = id
+        self.name = name
+        self.duration = duration
+        self.play_count = 0
+
+    def play(self):
+        self.play_count += 1
+        print(f"Playing content {self.id}: {self.name}")
+
+class ContentScheduler:
+    def __init__(self):
+        self.contents = {}
+        self.pre_show_content = []
+
+    def add_content(self, id, name, duration):
+        if id not in self.contents:
+            content = ContentItem(id, name, duration)
+            self.contents[id] = content
+            print(f"Content {id} added successfully.")
+        else:
+            print("Content with the same ID already exists.")
+
+    def update_content(self, id, name=None, duration=None):
+        if id in self.contents:
+            content = self.contents[id]
+            if name:
+                content.name = name
+            if duration:
+                content.duration = duration
+            print(f"Content {id} updated successfully.")
+        else:
+            print("Content not found.")
+
+    def delete_content(self, id):
+        if id in self.contents:
+            del self.contents[id]
+            print(f"Content {id} deleted successfully.")
+        else:
+            print("Content not found.")
+
+    def view_content(self, id):
+        if id in self.contents:
+            content = self.contents[id]
+            print(f"Content ID: {content.id}")
+            print(f"Name: {content.name}")
+            print(f"Duration: {content.duration} minutes")
+            print(f"Play Count: {content.play_count}")
+        else:
+            print("Content not found.")
+
+    def analyze_content(self):
+        total_play_count = sum(content.play_count for content in self.contents.values())
+        if total_play_count == 0:
+            print("No content has been played yet.")
+            return
+
+        print("Content Analysis:")
+        for content in self.contents.values():
+            if content.play_count > 0:
+                avg_duration = content.play_count * content.duration / total_play_count
+                print(f"Content ID: {content.id}")
+                print(f"Name: {content.name}")
+                print(f"Average Duration Played: {avg_duration:.2f} minutes")
+                print(f"Total Play Count: {content.play_count}")
+                print("-" * 20)
+
+    def add_pre_show_content(self, id, name, duration):
+        if id not in self.contents:
+            pre_show_content = PreShowContent(id, name, duration)
+            self.pre_show_content.append(pre_show_content)
+            print(f"Pre-show Content {id} added successfully.")
+        else:
+            print("Content with the same ID already exists.")
+
+    def view_pre_show_content(self):
+        if not self.pre_show_content:
+            print("No pre-show content added.")
+        else:
+            print("Pre-show Content:")
+            for content in self.pre_show_content:
+                print(f"Content ID: {content.id}")
+                print(f"Name: {content.name}")
+                print(f"Duration: {content.duration} minutes")
+
+class PreShowContent(ContentItem):
+    def __init__(self, id, name, duration):
+        super().__init__(id, name, duration)
+
+    def play(self):
+        self.play_count += 1
+        print(f"Playing pre-show content {self.id}: {self.name} (Pre-show)")
+
+def main():
+    scheduler = ContentScheduler()
+
+    while True:
+        print("\nPre-show Content Scheduler Menu:")
+        print("1. Add Content")
+        print("2. Update Content")
+        print("3. Delete Content")
+        print("4. View Content")
+        print("5. Play Content")
+        print("6. Analyze Content")
+        print("7. Add Pre-show Content")
+        print("8. View Pre-show Content")
+        print("9. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            id = input("Enter content ID: ")
+            name = input("Enter content name: ")
+            duration = float(input("Enter content duration (minutes): "))
+            scheduler.add_content(id, name, duration)
+        elif choice == "2":
+            id = input("Enter content ID to update: ")
+            name = input("Enter new name (leave empty to keep current): ")
+            duration = input("Enter new duration (minutes) (leave empty to keep current): ")
+            if duration:
+                duration = float(duration)
+            scheduler.update_content(id, name, duration)
+        elif choice == "3":
+            id = input("Enter content ID to delete: ")
+            scheduler.delete_content(id)
+        elif choice == "4":
+            id = input("Enter content ID to view: ")
+            scheduler.view_content(id)
+        elif choice == "5":
+            id = input("Enter content ID to play: ")
+            if id in scheduler.contents:
+                scheduler.contents[id].play()
+            else:
+                print("Content not found.")
+        elif choice == "6":
+            scheduler.analyze_content()
+        elif choice == "7":
+            id = input("Enter pre-show content ID: ")
+            name = input("Enter pre-show content name: ")
+            duration = float(input("Enter pre-show content duration (minutes): "))
+            scheduler.add_pre_show_content(id, name, duration)
+        elif choice == "8":
+            scheduler.view_pre_show_content()
+        elif choice == "9":
+            print("Exiting program.")
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
